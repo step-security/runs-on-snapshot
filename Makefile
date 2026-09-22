@@ -15,13 +15,13 @@ COMMAND := "."
 .PHONY: main-linux-amd64
 main-linux-amd64: _require-upx
 	rm -f main-linux-amd64
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -trimpath -installsuffix static -o "main-linux-amd64" $(COMMAND)
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -trimpath -buildvcs=false -installsuffix static -o "main-linux-amd64" $(COMMAND)
 	upx -q -9 "main-linux-amd64"
 
 .PHONY: main-linux-arm64
 main-linux-arm64: _require-upx
 	rm -f main-linux-arm64
-	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -trimpath -installsuffix static -o "main-linux-arm64" $(COMMAND)
+	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -trimpath -buildvcs=false -installsuffix static -o "main-linux-arm64" $(COMMAND)
 	upx -q -9 "main-linux-arm64"
 
 .PHONY: build
