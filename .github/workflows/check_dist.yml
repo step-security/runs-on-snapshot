@@ -26,9 +26,6 @@ jobs:
         with:
           go-version-file: 'go.mod'
 
-      - name: Install UPX
-        run: sudo apt-get install -y upx
-
       - name: Install dependencies
         run: npm ci
 
