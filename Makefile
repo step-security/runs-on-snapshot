@@ -11,15 +11,20 @@ help:
 
 COMMAND := "."
 
+# Pinned so the binaries are byte-for-byte reproducible on any host. Anything
+# recorded in .go.buildinfo (GOEXPERIMENT, GOFLAGS, GOAMD64/GOARM64) must not be
+# inherited from the developer's environment, or `check_dist` sees a diff.
+GOENV := CGO_ENABLED=0 GOEXPERIMENT= GOFLAGS= GOOS=linux
+
 .PHONY: main-linux-amd64
 main-linux-amd64:
 	rm -f main-linux-amd64
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -trimpath -buildvcs=false -installsuffix static -o "main-linux-amd64" $(COMMAND)
+	$(GOENV) GOARCH=amd64 GOAMD64=v1 go build -ldflags="-s -w" -trimpath -buildvcs=false -installsuffix static -o "main-linux-amd64" $(COMMAND)
 
 .PHONY: main-linux-arm64
 main-linux-arm64:
 	rm -f main-linux-arm64
-	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -trimpath -buildvcs=false -installsuffix static -o "main-linux-arm64" $(COMMAND)
+	$(GOENV) GOARCH=arm64 GOARM64=v8.0 go build -ldflags="-s -w" -trimpath -buildvcs=false -installsuffix static -o "main-linux-arm64" $(COMMAND)
 
 .PHONY: build
 build: main-linux-amd64 main-linux-arm64
