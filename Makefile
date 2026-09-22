@@ -9,31 +9,27 @@ help:
 	@echo '   make build                 Build all static binaries + bundle JS into dist/'
 	@echo ''
 
-UPX_BIN := $(shell command -v upx 2> /dev/null)
 COMMAND := "."
 
+# Pinned so the binaries are byte-for-byte reproducible on any host. Anything
+# recorded in .go.buildinfo (GOEXPERIMENT, GOFLAGS, GOAMD64/GOARM64) must not be
+# inherited from the developer's environment, or `check_dist` sees a diff.
+GOENV := CGO_ENABLED=0 GOEXPERIMENT= GOFLAGS= GOOS=linux
+
 .PHONY: main-linux-amd64
-main-linux-amd64: _require-upx
+main-linux-amd64:
 	rm -f main-linux-amd64
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -trimpath -buildvcs=false -installsuffix static -o "main-linux-amd64" $(COMMAND)
-	upx -q -9 "main-linux-amd64"
+	$(GOENV) GOARCH=amd64 GOAMD64=v1 go build -ldflags="-s -w" -trimpath -buildvcs=false -installsuffix static -o "main-linux-amd64" $(COMMAND)
 
 .PHONY: main-linux-arm64
-main-linux-arm64: _require-upx
+main-linux-arm64:
 	rm -f main-linux-arm64
-	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -trimpath -buildvcs=false -installsuffix static -o "main-linux-arm64" $(COMMAND)
-	upx -q -9 "main-linux-arm64"
+	$(GOENV) GOARCH=arm64 GOARM64=v8.0 go build -ldflags="-s -w" -trimpath -buildvcs=false -installsuffix static -o "main-linux-arm64" $(COMMAND)
 
 .PHONY: build
 build: main-linux-amd64 main-linux-arm64
 	npm run build
 	cp main-linux-amd64 main-linux-arm64 dist/
-
-.PHONY: _require-upx
-_require-upx:
-ifndef UPX_BIN
-	$(error 'upx is not installed, it can be installed via "apt-get install upx", "apk add upx" or "brew install upx".')
-endif
 
 .PHONY: bump tag release upgrade
 
