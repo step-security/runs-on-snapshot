@@ -22,19 +22,15 @@ jobs:
         with:
           node-version-file: 'package.json'
 
-      - uses: actions/setup-go@v7
-        with:
-          go-version-file: 'go.mod'
-
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
-        run: make build
+      - name: Build JS bundle
+        run: npm run build
 
       - name: Check for uncommitted changes in dist/
         run: |
-          if ! git diff --exit-code dist/; then
-            echo "dist/ is out of date. Run 'make build' locally and commit the result."
+          if ! git diff --exit-code dist/index.js dist/post.js; then
+            echo "dist/index.js or dist/post.js is out of date. Run 'npm run build' locally and commit the result."
             exit 1
           fi
