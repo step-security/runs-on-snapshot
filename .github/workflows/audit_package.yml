@@ -18,7 +18,7 @@ on:
       script:
         description: "Command used to build/bundle the action"
         required: false
-        default: "sudo apt-get install -y upx && make build"
+        default: "make build"
   schedule:
     - cron: "0 0 * * 1"
 
@@ -29,7 +29,7 @@ jobs:
       force: ${{ inputs.force || false }}
       base_branch: ${{ inputs.base_branch || 'main' }}
       node_version: ${{ inputs.node_version || '24' }}
-      script: ${{ inputs.script || 'sudo apt-get install -y upx && make build' }}
+      script: ${{ inputs.script || 'make build' }}
 
 permissions:
   contents: write
